@@ -1,0 +1,7 @@
+js eol=lf
+css eol=lf
+html eol=lf
+
+.gitkeep export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
