@@ -1,12 +1,15 @@
 {
-  "name": "tmp",
+  "name": "communikerokero",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": {
+    "name": "Kohei Yamasaki",
+    "email": "kohei0302@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "express": "~4.8.2"
