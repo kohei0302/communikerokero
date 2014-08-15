@@ -7,6 +7,7 @@ uglify = require 'gulp-uglify'
 minify = require 'gulp-minify-css'
 browserify = require 'browserify';
 source = require 'vinyl-source-stream'
+streamify = require 'gulp-streamify'
 
 
 gulp.task 'browserSync', ->
@@ -15,7 +16,6 @@ gulp.task 'browserSync', ->
             baseDir: 'htdocs'
 
 gulp.task 'html', ->
-    browserSync.reload;
 
 gulp.task 'css', ->
     gulp.src('nodeapp/sass/**/*.scss')
@@ -24,7 +24,8 @@ gulp.task 'css', ->
             css: 'htdocs/css/',
             sass: 'nodeapp/sass/',
             comments: false
-        .pipe minify
+        .pipe minify()
+        .pipe gulp.dest 'htdocs/css/'
 
 gulp.task 'js', ->
     browserify
@@ -32,6 +33,7 @@ gulp.task 'js', ->
             extensions: ['.coffee']
         .bundle()
         .pipe source 'main.js'
+        .pipe streamify(uglify())
         .pipe gulp.dest 'htdocs/js/'
 
 gulp.task 'bower', ->
@@ -42,9 +44,9 @@ gulp.task 'bower', ->
         .pipe gulp.dest('htdocs/css/libs')
 
 gulp.task 'watch', ['browserSync'], ->
-    gulp.watch('htdocs/**/*.html', ['html'])
-    gulp.watch('nodeapp/coffee/**/*.coffee', ['js'])
-    gulp.watch('nodeapp/sass/**/*.scss', ['css'])
+    gulp.watch('htdocs/**/*.html', ['html', browserSync.reload])
+    gulp.watch('nodeapp/coffee/**/*.coffee', ['js', browserSync.reload])
+    gulp.watch('nodeapp/sass/**/*.scss', ['css', browserSync.reload])
 
 gulp.task 'deploy', ['css', 'js']
 gulp.task 'default', ['bower', 'watch']
