@@ -1,0 +1,40 @@
+{
+  "name": "communikerokero",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Kohei Yamasaki",
+    "email": "kohei0302@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.6.1"
+  },
+  "devDependencies": {
+    "bower": "^1.3.9",
+    "browser-sync": "^1.3.3",
+    "browserify": "^5.9.1",
+    "coffee-script": "^1.7.1",
+    "coffeeify": "^0.7.0",
+    "debowerify": "^0.8.1",
+    "gulp": "^3.8.7",
+    "gulp-browserify": "^0.5.0",
+    "gulp-coffee": "^2.1.1",
+    "gulp-compass": "^1.2.0",
+    "gulp-minify-css": "^0.3.7",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^0.3.1",
+    "gulp-util": "^3.0.0",
+    "vinyl-source-stream": "^0.1.1"
+  },
+  "browserify": {
+    "transform": [
+      "coffeeify",
+      "debowerify"
+    ]
+  }
+}
