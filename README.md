@@ -1,10 +1,11 @@
-# インストール方法
+# Galileoへのインストール方法
 
     # cd /home/root/
     # git clone https://github.com/kohei0302/communikerokero.git
     # cd communikerokero/
-    # git checkout origin/develop
     # npm install --production
+
+※パスを読み替えて頂ければ、Galileo以外でも動作します。  
 
 # Webサーバ起動方法
 
