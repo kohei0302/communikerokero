@@ -5,6 +5,7 @@ var fs = require('fs');
 var app = express();
 var server = app.listen(8080);
 var io = socket(server);
+var exec = require('child_process').exec;
 
 var filepath = '/home/root/keropipe';
 
@@ -43,4 +44,25 @@ function gpioPwmWrite(pin, value) {
   io.period_us(700);
   io.enable(true);
   io.write(value);
+}
+
+exec('amixer set PCM 151');
+
+function soundPlay(type) {
+  var file = './htdocs/sound/';
+  switch (type) {
+    case '1':
+      file += 'niconico.wav';
+      break;
+    case '2':
+      file += 'punpun.wav';
+      break;
+    case '3':
+      file += 'shikushiku.wav';
+      break;
+    case '4':
+      file += 'runrun.wav';
+      break;
+  }
+  exec('aplay ' + file);
 }
