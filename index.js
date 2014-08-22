@@ -9,6 +9,12 @@ var exec = require('child_process').exec;
 
 var filepath = '/home/root/keropipe';
 
+var MODE = {
+  CALL: 1,
+  WAIT: 0,
+};
+var mode = MODE.WAIT;
+
 app.use('/', express.static(__dirname + '/htdocs'));
 console.log('start web server');
 
@@ -22,7 +28,8 @@ io.on('connection', function (socket) {
       case '3':
       case '4':
         console.log('data: ', data);
-        //writePipeFile(data);
+        soundPlay(data);
+        gpioPwmWrite(11, 1);
         io.sockets.emit('statusChanged', data);
     }
   });
@@ -35,6 +42,11 @@ function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
     console.log(data);
+    if (data == '1') {
+      mode = MODE.CALL;
+    } else {
+      mode = MODE.WAIT;
+    }
     readPipeFile();
   });
 }
@@ -63,6 +75,8 @@ function soundPlay(type) {
     case '4':
       file += 'runrun.wav';
       break;
+    default:
+      return;
   }
   exec('aplay ' + file);
 }
