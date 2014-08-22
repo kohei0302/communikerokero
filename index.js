@@ -1,5 +1,7 @@
 var express = require('express');
 var socket = require('socket.io');
+var Galileo = require("galileo-io");
+var board = new Galileo();
 var fs = require('fs');
 var app = express();
 var server = app.listen(8080);
@@ -20,30 +22,27 @@ io.on('connection', function (socket) {
       case '3':
       case '4':
         console.log('data: ', data);
-        writePipeFile(data);
-        // pipeを使った場合、書き込みとcallbackの順序がバラバラなため、直後にステータスをwebに反映
+        //writePipeFile(data);
         io.sockets.emit('statusChanged', data);
     }
   });
 });
 
-writePipeFile(0);
+readPipeFile();
+gpioPwmWrite(11, 1023);
 
-function writePipeFile(data)
-{
-  var buffer = new Buffer(data + "\n");
-  fs.open(filepath, 'w', function(err, fd) {
-    if (err) {
-      throw 'error opening file: ' + err;
-    } else {
-      fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-        if (err) {
-          throw 'error writing file: ' + err;
-        }
-        fs.close(fd, function() {
-          console.log('file written: ' + data);
-        });
-      });
-    }
+function readPipeFile() {
+  fs.readFile(filepath, 'utf8', function (err, data) {
+    if (err) throw err;
+    console.log(data);
+    readPipeFile();
+  });
+}
+
+function gpioPwmWrite(pin, value) {
+  board.pinMode(pin, board.MODES.PWM);
+  board.analogWrite(pin, value);
+  board.digitalRead(12, function(data) {
+    console.log(data);
   });
 }
