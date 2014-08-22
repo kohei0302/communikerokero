@@ -1,7 +1,6 @@
 var express = require('express');
 var socket = require('socket.io');
-var Galileo = require("galileo-io");
-var board = new Galileo();
+var mraa = require('mraa');
 var fs = require('fs');
 var app = express();
 var server = app.listen(8080);
@@ -29,7 +28,7 @@ io.on('connection', function (socket) {
 });
 
 readPipeFile();
-gpioPwmWrite(11, 1023);
+gpioPwmWrite(11, 0.5);
 
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
@@ -40,9 +39,8 @@ function readPipeFile() {
 }
 
 function gpioPwmWrite(pin, value) {
-  board.pinMode(pin, board.MODES.PWM);
-  board.analogWrite(pin, value);
-  board.digitalRead(12, function(data) {
-    console.log(data);
-  });
+  var io = new mraa.Pwm(pin);
+  io.period_us(700);
+  io.enable(true);
+  io.write(value);
 }
