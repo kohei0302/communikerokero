@@ -81,9 +81,11 @@ function readPipeFile() {
 
 var pwmpin = [];
 function gpioPwmWrite(pin, value) {
-  pwmpin[pin] = new mraa.Pwm(pin);
-  pwmpin[pin].period_us(700);
-  pwmpin[pin].enable(true);
+  if (typeof pwmpin[pin] === 'undefined') {
+    pwmpin[pin] = new mraa.Pwm(pin);
+    pwmpin[pin].period_us(700);
+    pwmpin[pin].enable(true);
+  }
   pwmpin[pin].write(value);
 }
 
