@@ -110,10 +110,8 @@ function soundPlay(type) {
 
 illuminate();
 function illuminate() {
-  setTimeout(function() {
-    if (mode == MODE.CALL) {
-      ledLight(Math.random(), Math.random(), Math.random());
-    }
-    setTimeout(illuminate, 50);
-  }, 50);
+  if (mode == MODE.CALL) {
+    ledLight(Math.random(), Math.random(), Math.random());
+  }
+  setTimeout(illuminate, 50);
 }
