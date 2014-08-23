@@ -36,7 +36,7 @@ io.on('connection', function (socket) {
         ledLight(0, 0, 0);
         break;
       case '1':
-        ledLight(0, 1, 1);
+        ledLight(1, 0.4, 0);
         break;
       case '2':
         ledLight(1, 0, 0);
@@ -45,7 +45,7 @@ io.on('connection', function (socket) {
         ledLight(0, 0, 1);
         break;
       case '4':
-        ledLight(1, 1, 0);
+        ledLight(1, 0, 1);
         break;
     }
   });
@@ -79,6 +79,7 @@ function gpioPwmWrite(pin, value) {
   pwmpin[pin].write(value);
 }
 
+ledLight(0, 0, 0);
 function ledLight(red, green, blue) {
   gpioPwmWrite(9, red);
   gpioPwmWrite(10, green);
