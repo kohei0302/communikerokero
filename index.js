@@ -79,7 +79,7 @@ function readPipeFile() {
   });
 }
 
-var pwmpin = [];
+var pwmpin = {};
 function gpioPwmWrite(pin, value) {
   if (typeof pwmpin[pin] === 'undefined') {
     pwmpin[pin] = new mraa.Pwm(pin);
