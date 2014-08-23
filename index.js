@@ -75,14 +75,14 @@ function readPipeFile() {
   });
 }
 
-var io = [];
+var pwmpin = [];
 function gpioPwmWrite(pin, value) {
-  if (typeof io[pin] !== 'undefined') {
-    io[pin] = new mraa.Pwm(pin);
-    io[pin].period_us(700);
-    io[pin].enable(true);
+  if (typeof pwmpin[pin] === 'undefined') {
+    pwmpin[pin] = new mraa.Pwm(pin);
+    pwmpin[pin].period_us(700);
+    pwmpin[pin].enable(true);
   }
-  io[pin].write(value);
+  pwmpin[pin].write(value);
 }
 
 exec('amixer set PCM 151');
