@@ -29,10 +29,14 @@ io.on('connection', function (socket) {
       case '4':
         console.log('data: ', data);
         soundPlay(data);
-        gpioPwmWrite(11, 1);
         io.sockets.emit('statusChanged', data);
     }
     switch (data) {
+      case '0':
+        gpioPwmWrite(9, 0);
+        gpioPwmWrite(10, 0);
+        gpioPwmWrite(11, 0);
+        break;
       case '1':
         gpioPwmWrite(9, 1);
         gpioPwmWrite(10, 0);
@@ -77,11 +81,9 @@ function readPipeFile() {
 
 var pwmpin = [];
 function gpioPwmWrite(pin, value) {
-  if (typeof pwmpin[pin] === 'undefined') {
-    pwmpin[pin] = new mraa.Pwm(pin);
-    pwmpin[pin].period_us(700);
-    pwmpin[pin].enable(true);
-  }
+  pwmpin[pin] = new mraa.Pwm(pin);
+  pwmpin[pin].period_us(700);
+  pwmpin[pin].enable(true);
   pwmpin[pin].write(value);
 }
 
