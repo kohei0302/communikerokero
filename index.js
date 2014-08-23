@@ -36,10 +36,10 @@ io.on('connection', function (socket) {
         ledLight(0, 0, 0);
         break;
       case '1':
-        ledLight(1, 0, 0);
+        ledLight(0, 1, 1);
         break;
       case '2':
-        ledLight(0, 1, 0);
+        ledLight(1, 0, 0);
         break;
       case '3':
         ledLight(0, 0, 1);
