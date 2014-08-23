@@ -33,29 +33,19 @@ io.on('connection', function (socket) {
     }
     switch (data) {
       case '0':
-        gpioPwmWrite(9, 0);
-        gpioPwmWrite(10, 0);
-        gpioPwmWrite(11, 0);
+        ledLight(0, 0, 0);
         break;
       case '1':
-        gpioPwmWrite(9, 1);
-        gpioPwmWrite(10, 0);
-        gpioPwmWrite(11, 0);
+        ledLight(1, 0, 0);
         break;
       case '2':
-        gpioPwmWrite(9, 0);
-        gpioPwmWrite(10, 0);
-        gpioPwmWrite(11, 1);
+        ledLight(0, 1, 0);
         break;
       case '3':
-        gpioPwmWrite(9, 0);
-        gpioPwmWrite(10, 1);
-        gpioPwmWrite(11, 0);
+        ledLight(0, 0, 1);
         break;
       case '4':
-        gpioPwmWrite(9, 0);
-        gpioPwmWrite(10, 1);
-        gpioPwmWrite(11, 1);
+        ledLight(1, 1, 0);
         break;
     }
   });
@@ -89,6 +79,12 @@ function gpioPwmWrite(pin, value) {
   pwmpin[pin].write(value);
 }
 
+function ledLight(red, green, blue) {
+  gpioPwmWrite(9, red);
+  gpioPwmWrite(10, green);
+  gpioPwmWrite(11, blue);
+}
+
 exec('amixer set PCM 151');
 
 function soundPlay(type) {
@@ -114,10 +110,10 @@ function soundPlay(type) {
 
 illuminate();
 function illuminate() {
-  if (mode == MODE.CALL) {
-    gpioPwmWrite(9, Math.random());
-    gpioPwmWrite(10, Math.random());
-    gpioPwmWrite(11, Math.random());
-  }
-  setTimeout(illuminate, 10);
+  setTimeout(function() {
+    if (mode == MODE.CALL) {
+      ledLight(Math.random(), Math.random(), Math.random());
+    }
+    setTimeout(illuminate, 50);
+  }, 50);
 }
