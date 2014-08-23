@@ -32,11 +32,32 @@ io.on('connection', function (socket) {
         gpioPwmWrite(11, 1);
         io.sockets.emit('statusChanged', data);
     }
+    switch (data) {
+      case '1':
+        gpioPwmWrite(9, 1);
+        gpioPwmWrite(10, 0);
+        gpioPwmWrite(11, 0);
+        break;
+      case '2':
+        gpioPwmWrite(9, 0);
+        gpioPwmWrite(10, 0);
+        gpioPwmWrite(11, 1);
+        break;
+      case '3':
+        gpioPwmWrite(9, 0);
+        gpioPwmWrite(10, 1);
+        gpioPwmWrite(11, 0);
+        break;
+      case '4':
+        gpioPwmWrite(9, 0);
+        gpioPwmWrite(10, 1);
+        gpioPwmWrite(11, 1);
+        break;
+    }
   });
 });
 
 readPipeFile();
-gpioPwmWrite(11, 0.5);
 
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
@@ -46,16 +67,22 @@ function readPipeFile() {
       mode = MODE.CALL;
     } else {
       mode = MODE.WAIT;
+      gpioPwmWrite(9, 0);
+      gpioPwmWrite(10, 0);
+      gpioPwmWrite(11, 0);
     }
     readPipeFile();
   });
 }
 
+var io = [];
 function gpioPwmWrite(pin, value) {
-  var io = new mraa.Pwm(pin);
-  io.period_us(700);
-  io.enable(true);
-  io.write(value);
+  if (typeof io[pin] !== 'undefined') {
+    io[pin] = new mraa.Pwm(pin);
+    io[pin].period_us(700);
+    io[pin].enable(true);
+  }
+  io[pin].write(value);
 }
 
 exec('amixer set PCM 151');
@@ -79,4 +106,14 @@ function soundPlay(type) {
       return;
   }
   exec('aplay ' + file);
+}
+
+illuminate();
+function illuminate() {
+  if (mode == MODE.CALL) {
+    gpioPwmWrite(9, Math.random());
+    gpioPwmWrite(10, Math.random());
+    gpioPwmWrite(11, Math.random());
+  }
+  setTimeout(illuminate, 10);
 }
