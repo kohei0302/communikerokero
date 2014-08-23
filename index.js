@@ -1,11 +1,19 @@
 var express = require('express');
 var socket = require('socket.io');
+var mraa = require('mraa');
 var fs = require('fs');
 var app = express();
 var server = app.listen(8080);
 var io = socket(server);
+var exec = require('child_process').exec;
 
 var filepath = '/home/root/keropipe';
+
+var MODE = {
+  CALL: 1,
+  WAIT: 0,
+};
+var mode = MODE.WAIT;
 
 app.use('/', express.static(__dirname + '/htdocs'));
 console.log('start web server');
@@ -20,30 +28,94 @@ io.on('connection', function (socket) {
       case '3':
       case '4':
         console.log('data: ', data);
-        writePipeFile(data);
-        // pipeを使った場合、書き込みとcallbackの順序がバラバラなため、直後にステータスをwebに反映
+        soundPlay(data);
         io.sockets.emit('statusChanged', data);
+    }
+    switch (data) {
+      case '0':
+        ledLight(0, 0, 0);
+        break;
+      case '1':
+        ledLight(1, 0.4, 0);
+        break;
+      case '2':
+        ledLight(1, 0, 0);
+        break;
+      case '3':
+        ledLight(0, 0, 1);
+        break;
+      case '4':
+        ledLight(1, 0, 1);
+        break;
     }
   });
 });
 
-writePipeFile(0);
+readPipeFile();
 
-function writePipeFile(data)
-{
-  var buffer = new Buffer(data + "\n");
-  fs.open(filepath, 'w', function(err, fd) {
-    if (err) {
-      throw 'error opening file: ' + err;
+function readPipeFile() {
+  fs.readFile(filepath, 'utf8', function (err, data) {
+    if (err) throw err;
+    console.log(data);
+    if (data == '1') {
+      mode = MODE.CALL;
     } else {
-      fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-        if (err) {
-          throw 'error writing file: ' + err;
-        }
-        fs.close(fd, function() {
-          console.log('file written: ' + data);
-        });
-      });
+      mode = MODE.WAIT;
+      gpioPwmWrite(9, 0);
+      gpioPwmWrite(10, 0);
+      gpioPwmWrite(11, 0);
     }
+    readPipeFile();
   });
+}
+
+var pwmpin = {};
+function gpioPwmWrite(pin, value) {
+  if (typeof pwmpin[pin] === 'undefined') {
+    pwmpin[pin] = new mraa.Pwm(pin);
+    pwmpin[pin].period_us(700);
+    pwmpin[pin].enable(true);
+  }
+  pwmpin[pin].write(value);
+}
+
+ledLight(0, 0, 0);
+function ledLight(red, green, blue) {
+  gpioPwmWrite(9, red);
+  gpioPwmWrite(10, green);
+  gpioPwmWrite(11, blue);
+}
+
+exec('amixer set PCM 151');
+
+function soundPlay(type) {
+  var file = './htdocs/sound/';
+  switch (type) {
+    case '1':
+      file += 'niconico.wav';
+      break;
+    case '2':
+      file += 'punpun.wav';
+      break;
+    case '3':
+      file += 'shikushiku.wav';
+      break;
+    case '4':
+      file += 'runrun.wav';
+      break;
+    default:
+      return;
+  }
+  exec('aplay ' + file);
+}
+
+illuminate();
+function illuminate() {
+  if (mode == MODE.CALL) {
+    ledLight(0, 0, 0);
+    setTimeout(function () {
+      ledLight(Math.random(), Math.random(), Math.random());
+    }, 50);
+  }
+  setTimeout(illuminate, 100);
 }
