@@ -58,6 +58,7 @@ function statusChange(data) {
   }
 }
 
+readPipeFile();
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
