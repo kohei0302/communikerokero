@@ -58,7 +58,7 @@ function statusChange(data) {
   }
 }
 
-setInterval(function() {
+function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
     console.log(data);
@@ -73,8 +73,9 @@ setInterval(function() {
     setTimeout(function () {
       ledLight(0, 0, 0);
     }, 50);
+    readPipeFile();
   });
-});
+}
 
 var pwmpin = {};
 function gpioPwmWrite(pin, value) {
