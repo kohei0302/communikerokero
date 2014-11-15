@@ -22,25 +22,23 @@ console.log('start web server');
 
 io.on('connection', function (socket) {
   socket.on('statusChange', function (data) {
+    data = data + '';
+    switch (data) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+        console.log('data: ', data);
+        soundPlay(data);
+        io.sockets.emit('statusChanged', data);
+    }
     emotion = data;
     statusChange(data);
   });
 });
 
-readPipeFile();
-
 function statusChange(data) {
-  data = data + '';
-  switch (data) {
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-      console.log('data: ', data);
-      soundPlay(data);
-      io.sockets.emit('statusChanged', data);
-  }
   switch (data) {
     case '0':
       ledLight(0, 0, 0);
@@ -60,21 +58,23 @@ function statusChange(data) {
   }
 }
 
-function readPipeFile() {
+setInterval(function() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
     console.log(data);
     if (data == '1') {
       mode = MODE.CALL;
+    } else if (data == '2') {
+      mode = MODE.CALLING;
     } else {
       mode = MODE.WAIT;
-      gpioPwmWrite(9, 0);
-      gpioPwmWrite(10, 0);
-      gpioPwmWrite(11, 0);
     }
-    readPipeFile();
+    io.sockets.emit('statusChanged', 0);
+    setTimeout(function () {
+      ledLight(0, 0, 0);
+    }, 50);
   });
-}
+});
 
 var pwmpin = {};
 function gpioPwmWrite(pin, value) {
@@ -86,7 +86,6 @@ function gpioPwmWrite(pin, value) {
   pwmpin[pin].write(value);
 }
 
-ledLight(0, 0, 0);
 function ledLight(red, green, blue) {
   gpioPwmWrite(9, red);
   gpioPwmWrite(10, green);
@@ -128,7 +127,5 @@ setInterval(function() {
     setTimeout(function () {
       ledLight(Math.random(), Math.random(), Math.random());
     }, 50);
-  } else {
-    statusChange(emotion);
   }
 }, 100);
