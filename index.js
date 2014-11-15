@@ -70,6 +70,7 @@ function readPipeFile() {
         mode = MODE.CALL;
       } else if (data == '2') {
         mode = MODE.CALLING;
+        ledLight(0, 1, 0);
       } else {
         mode = MODE.WAIT;
       }
