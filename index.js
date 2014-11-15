@@ -126,7 +126,7 @@ function soundPlay(type) {
   setTimeout(function() {
     console.log('sound 0');
     soundPlaying = false;
-  }, 3000);
+  }, 1500);
 }
 
 setInterval(function() {
