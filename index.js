@@ -103,7 +103,7 @@ exec('amixer set PCM 50');
 var soundPlaying = false;
 function soundPlay(type) {
   if (soundPlaying) return;
-  soundPlaying = true;
+  console.log('sound 1');
   var file = './htdocs/sound/';
   switch (type) {
     case '1':
@@ -121,8 +121,10 @@ function soundPlay(type) {
     default:
       return;
   }
+  soundPlaying = true;
   exec('aplay ' + file);
   setTimeout(function() {
+    console.log('sound 0');
     soundPlaying = false;
   }, 3000);
 }
