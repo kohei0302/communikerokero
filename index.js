@@ -73,11 +73,11 @@ function readPipeFile() {
         ledLight(0, 1, 0);
       } else {
         mode = MODE.WAIT;
+        setTimeout(function () {
+          ledLight(0, 0, 0);
+        }, 50);
       }
       io.sockets.emit('statusChanged', 0);
-      setTimeout(function () {
-        ledLight(0, 0, 0);
-      }, 50);
     }
     readPipeFile();
   });
