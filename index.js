@@ -130,7 +130,6 @@ function soundPlay(type) {
 }
 
 setInterval(function() {
-  console.log('mode: ' + mode);
   if (mode == MODE.CALL) {
     ledLight(0, 0, 0);
     setTimeout(function () {
