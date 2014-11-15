@@ -63,8 +63,8 @@ var before = 0;
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
-    console.log(data);
     if (before != data) {
+      console.log(data);
       before = data;
       if (data == '1') {
         mode = MODE.CALL;
