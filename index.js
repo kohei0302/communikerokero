@@ -59,21 +59,25 @@ function statusChange(data) {
 }
 
 readPipeFile();
+var before = 0;
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
     if (err) throw err;
     console.log(data);
-    if (data == '1') {
-      mode = MODE.CALL;
-    } else if (data == '2') {
-      mode = MODE.CALLING;
-    } else {
-      mode = MODE.WAIT;
+    if (before != data) {
+      before = data;
+      if (data == '1') {
+        mode = MODE.CALL;
+      } else if (data == '2') {
+        mode = MODE.CALLING;
+      } else {
+        mode = MODE.WAIT;
+      }
+      io.sockets.emit('statusChanged', 0);
+      setTimeout(function () {
+        ledLight(0, 0, 0);
+      }, 50);
     }
-    io.sockets.emit('statusChanged', 0);
-    setTimeout(function () {
-      ledLight(0, 0, 0);
-    }, 50);
     readPipeFile();
   });
 }
