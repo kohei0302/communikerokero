@@ -10,48 +10,55 @@ var exec = require('child_process').exec;
 var filepath = '/home/root/keropipe';
 
 var MODE = {
+  CALLING: 2,
   CALL: 1,
   WAIT: 0,
 };
 var mode = MODE.WAIT;
+var emotion = 0;
 
 app.use('/', express.static(__dirname + '/htdocs'));
 console.log('start web server');
 
 io.on('connection', function (socket) {
   socket.on('statusChange', function (data) {
-  data = data + '';
-    switch (data) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-        console.log('data: ', data);
-        soundPlay(data);
-        io.sockets.emit('statusChanged', data);
-    }
-    switch (data) {
-      case '0':
-        ledLight(0, 0, 0);
-        break;
-      case '1':
-        ledLight(1, 0.4, 0);
-        break;
-      case '2':
-        ledLight(1, 0, 0);
-        break;
-      case '3':
-        ledLight(0, 0, 1);
-        break;
-      case '4':
-        ledLight(1, 0, 1);
-        break;
-    }
+    emotion = data;
+    statusChange(data);
   });
 });
 
 readPipeFile();
+
+function statusChange(data) {
+  data = data + '';
+  switch (data) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+      console.log('data: ', data);
+      soundPlay(data);
+      io.sockets.emit('statusChanged', data);
+  }
+  switch (data) {
+    case '0':
+      ledLight(0, 0, 0);
+      break;
+    case '1':
+      ledLight(1, 0.4, 0);
+      break;
+    case '2':
+      ledLight(1, 0, 0);
+      break;
+    case '3':
+      ledLight(0, 0, 1);
+      break;
+    case '4':
+      ledLight(1, 0, 1);
+      break;
+  }
+}
 
 function readPipeFile() {
   fs.readFile(filepath, 'utf8', function (err, data) {
@@ -86,9 +93,12 @@ function ledLight(red, green, blue) {
   gpioPwmWrite(11, blue);
 }
 
-exec('amixer set PCM 151');
+exec('amixer set PCM 50');
 
+var soundPlaying = false;
 function soundPlay(type) {
+  if (soundPlaying) return;
+  soundPlaying = true;
   var file = './htdocs/sound/';
   switch (type) {
     case '1':
@@ -107,15 +117,18 @@ function soundPlay(type) {
       return;
   }
   exec('aplay ' + file);
+  setTimeout(function() {
+    soundPlaying = false;
+  }, 3000);
 }
 
-illuminate();
-function illuminate() {
+setInterval(function() {
   if (mode == MODE.CALL) {
     ledLight(0, 0, 0);
     setTimeout(function () {
       ledLight(Math.random(), Math.random(), Math.random());
     }, 50);
+  } else {
+    statusChange(emotion);
   }
-  setTimeout(illuminate, 100);
-}
+}, 100);
